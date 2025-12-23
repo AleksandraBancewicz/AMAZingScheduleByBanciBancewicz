@@ -158,8 +158,20 @@ function removeAbsence(i){
   renderAbsences();
 }
 
+function everyoneHasMinShifts(employees, shiftType, min = 8) {
+  return employees.every(e => {
+    return shiftType === "Dzień"
+      ? e.countDay >= min
+      : e.countNight >= min;
+  });
+}
+
 // GENEROWANIE GRAFIKU
 function generateSchedule(){
+  employees.forEach(e => {
+  e.countDay = 0;
+  e.countNight = 0;
+});
   schedule=[];
   scheduleTable.innerHTML=`
     <tr><th>IMIĘ</th><th>NAZWISKO</th><th>DZIAŁ</th>
@@ -179,8 +191,12 @@ function generateSchedule(){
         if(shift==="Noc" && !e.night) return false;
         return !absences.some(a=>a.emp===i && dateStr>=a.from && dateStr<=a.to && (a.shift==="ALL"||a.shift===shift));
       }).sort((a,b)=>(shift==="Dzień"?a.countDay-b.countDay:a.countNight-b.countNight));
+      let needed = 1;
+      // jeżeli KAŻDY dostępny pracownik ma już >= 8 dyżurów → wtedy 2 osoby
+      if (everyoneHasMinShifts(available, shift, 8)) {
+        needed = 2;
+      }
 
-      const needed=twoPeople.checked?2:1;
       for(let i=0;i<needed && i<available.length;i++){
         const e=available[i];
         shift==="Dzień"?e.countDay++:e.countNight++;
