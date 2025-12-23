@@ -8,7 +8,7 @@ const daysPL = ["NIEDZIELA","PONIEDZIAŁEK","WTOREK","ŚRODA","CZWARTEK","PIĄTE
 const polishHolidays = ["01-01","01-06","05-01","05-03","08-15","11-01","11-11","12-25","12-26"];
 
 function login(){
-  if(passwordInput.value === PASSWORD){
+  if(passwordInput.value===PASSWORD){
     loginBox.style.display="none";
     app.classList.remove("hidden");
     loadData();
@@ -54,14 +54,25 @@ function renderEmployees(){
 
   employees.forEach((e,i)=>{
     employeeCards.innerHTML+=`
-    <div class="employee-card">
-      <strong>${e.first} ${e.last}</strong> (${e.dept})<br>
-      DNI: ${e.days.map(d=>daysPL[d].slice(0,3)).join(", ")}<br>
-      ZMIANY: ${(e.day?"DZIEŃ ":"")}${(e.night?"NOC":"")}<br><br>
-      <button onclick="deleteEmployee(${i})">USUŃ</button>
-    </div>`;
+      <div class="employee-card">
+        <input value="${e.first}" onchange="editEmployee(${i}, 'first', this.value)">
+        <input value="${e.last}" onchange="editEmployee(${i}, 'last', this.value)">
+        <input value="${e.dept}" onchange="editEmployee(${i}, 'dept', this.value)"><br>
+        DNI: ${daysPL.map((d,j)=>e.days.includes(j)?d.slice(0,3):'').filter(Boolean).join(", ")}<br>
+        ZMIANY: 
+        <label><input type="checkbox" ${e.day?'checked':''} onchange="editEmployee(${i}, 'day', this.checked)">DZIEŃ</label>
+        <label><input type="checkbox" ${e.night?'checked':''} onchange="editEmployee(${i}, 'night', this.checked)">NOC</label><br>
+        <button onclick="deleteEmployee(${i})">USUŃ</button>
+      </div>`;
     absenceEmployee.innerHTML+=`<option value="${i}">${e.first} ${e.last}</option>`;
   });
+}
+
+function editEmployee(i,field,value){
+  if(field==='first' || field==='last' || field==='dept') employees[i][field]=value.toUpperCase();
+  if(field==='day' || field==='night') employees[i][field]=value;
+  saveData();
+  renderEmployees();
 }
 
 function deleteEmployee(i){
@@ -104,8 +115,8 @@ function removeAbsence(i){
 function generateSchedule(){
   schedule=[];
   scheduleTable.innerHTML=`
-  <tr><th>IMIĘ</th><th>NAZWISKO</th><th>DZIAŁ</th>
-  <th>DATA</th><th>DZIEŃ</th><th>ZMIANA</th></tr>`;
+    <tr><th>IMIĘ</th><th>NAZWISKO</th><th>DZIAŁ</th>
+    <th>DATA</th><th>DZIEŃ</th><th>ZMIANA</th></tr>`;
 
   const start=new Date(startDate.value);
   const end=new Date(endDate.value);
