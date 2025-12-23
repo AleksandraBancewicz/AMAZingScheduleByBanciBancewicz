@@ -70,6 +70,18 @@ function renderEmployees(){
       </div>`;
     absenceEmployee.innerHTML+=`<option value="${i}">${e.first} ${e.last}</option>`;
   });
+
+  employees.push({
+  first:firstName.value.toUpperCase(),
+  last:lastName.value.toUpperCase(),
+  dept:department.value.toUpperCase(),
+  days,
+  day:dayShift.checked,
+  night:nightShift.checked,
+  countDay:0,
+  countNight:0,
+  editing:false  // nowa flaga
+});
 }
 
 function editEmployee(i,field,value){
