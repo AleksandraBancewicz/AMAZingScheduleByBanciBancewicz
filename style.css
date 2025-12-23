@@ -36,6 +36,11 @@ h4 {
   color: var(--blue);
 }
 
+h2, h3 {
+  text-align: center;
+}
+
+
 nav {
   text-align: center;
 }
