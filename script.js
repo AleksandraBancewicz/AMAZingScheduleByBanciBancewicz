@@ -1,4 +1,4 @@
-const PASSWORD = "grafik123";
+const PASSWORD = "Forum2026";
 
 let employees = [];
 let absences = [];
