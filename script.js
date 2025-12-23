@@ -1,148 +1,165 @@
-const PASSWORD = "Forum2026"; // ← ZMIEŃ
+const PASSWORD = "Forum2026"; // ← ZMIEŃ HASŁO
 
 let employees = [];
 let absences = [];
-let holidays = [];
 let schedule = [];
 
-const daysPL = ["Niedziela","Poniedziałek","Wtorek","Środa","Czwartek","Piątek","Sobota"];
+const daysPL = ["NIEDZIELA","PONIEDZIAŁEK","WTOREK","ŚRODA","CZWARTEK","PIĄTEK","SOBOTA"];
+const polishHolidays = ["01-01","01-06","05-01","05-03","08-15","11-01","11-11","12-25","12-26"];
 
 function login(){
   if(passwordInput.value === PASSWORD){
-    loginBox.style.display="none";
+    loginBox.style.display = "none";
     app.classList.remove("hidden");
     loadData();
-  } else {
-    alert("Błędne hasło");
-  }
+  } else alert("BŁĘDNE HASŁO");
 }
 
 function showTab(id){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 }
 
 function saveData(){
   localStorage.setItem("employees", JSON.stringify(employees));
   localStorage.setItem("absences", JSON.stringify(absences));
-  localStorage.setItem("holidays", JSON.stringify(holidays));
   localStorage.setItem("schedule", JSON.stringify(schedule));
 }
 
 function loadData(){
-  employees = JSON.parse(localStorage.getItem("employees")||"[]");
-  absences = JSON.parse(localStorage.getItem("absences")||"[]");
-  holidays = JSON.parse(localStorage.getItem("holidays")||"[]");
+  employees = JSON.parse(localStorage.getItem("employees") || "[]");
+  absences = JSON.parse(localStorage.getItem("absences") || "[]");
   renderEmployees();
   renderAbsences();
-  renderHolidays();
 }
 
 function addEmployee(){
-  const days=[...document.querySelectorAll("fieldset input:checked")].map(c=>+c.value);
+  const days = [...document.querySelectorAll(".days input:checked")].map(c => +c.value);
   employees.push({
-    first:firstName.value,
-    last:lastName.value,
-    dept:department.value,
+    first: firstName.value.toUpperCase(),
+    last: lastName.value.toUpperCase(),
+    dept: department.value.toUpperCase(),
     days,
-    day:dayShift.checked,
-    night:nightShift.checked,
-    count:0
+    day: dayShift.checked,
+    night: nightShift.checked,
+    count: 0
   });
   saveData();
   renderEmployees();
 }
 
 function renderEmployees(){
-  employeeList.innerHTML="";
-  absenceEmployee.innerHTML="";
+  employeeCards.innerHTML = "";
+  absenceEmployee.innerHTML = "";
+
   employees.forEach((e,i)=>{
-    employeeList.innerHTML+=`<li>${e.first} ${e.last} (${e.dept})</li>`;
-    absenceEmployee.innerHTML+=`<option value="${i}">${e.first} ${e.last}</option>`;
+    employeeCards.innerHTML += `
+      <div class="employee-card">
+        <strong>${e.first} ${e.last}</strong> (${e.dept})<br>
+        DNI: ${e.days.map(d => daysPL[d].slice(0,3)).join(", ")}<br>
+        ZMIANY: ${(e.day?"DZIEŃ ":"")}${(e.night?"NOC":"")}
+      </div>`;
+    absenceEmployee.innerHTML += `<option value="${i}">${e.first} ${e.last}</option>`;
   });
 }
 
 function addAbsence(){
-  absences.push({emp:+absenceEmployee.value,date:absenceDate.value});
+  absences.push({
+    emp:+absenceEmployee.value,
+    from:absenceFrom.value,
+    to:absenceTo.value,
+    shift:absenceShift.value
+  });
   saveData();
   renderAbsences();
 }
 
 function renderAbsences(){
-  absenceList.innerHTML=absences.map(a=>`<li>${employees[a.emp].first} – ${a.date}</li>`).join("");
-}
-
-function addHoliday(){
-  holidays.push(holidayDate.value);
-  saveData();
-  renderHolidays();
-}
-
-function renderHolidays(){
-  holidayList.innerHTML=holidays.map(d=>`<li>${d}</li>`).join("");
+  absenceList.innerHTML = absences.map(a =>
+    `<li>${employees[a.emp].first} ${employees[a.emp].last} | ${a.from} – ${a.to} | ${a.shift}</li>`
+  ).join("");
 }
 
 function generateSchedule(){
-  schedule=[];
-  scheduleTable.innerHTML=`<tr>
-  <th>Imię</th><th>Nazwisko</th><th>Dział</th>
-  <th>Data</th><th>Dzień</th><th>Zmiana</th></tr>`;
+  schedule = [];
+  scheduleTable.innerHTML = `
+    <tr>
+      <th>IMIĘ</th><th>NAZWISKO</th><th>DZIAŁ</th>
+      <th>DATA</th><th>DZIEŃ</th><th>ZMIANA</th>
+    </tr>`;
 
-  const now=new Date();
-  const start=new Date(now.getFullYear(),now.getMonth(),1);
-  const end=new Date(now.getFullYear(),now.getMonth()+1,0);
+  const start = new Date(startDate.value);
+  const end = new Date(endDate.value);
+  const shift = globalShift.value;
 
-  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
-    const dateStr=d.toISOString().slice(0,10);
-    if(holidays.includes(dateStr)) continue;
+  for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+    const dateStr = d.toISOString().slice(0,10);
+    if(polishHolidays.includes(dateStr.slice(5))) continue;
 
-    ["Dzień","Noc"].forEach(shift=>{
-      let available=employees
-        .filter((e,i)=>
-          e.days.includes(d.getDay()) &&
-          (shift==="Dzień"?e.day:e.night) &&
-          !absences.some(a=>a.emp===i && a.date===dateStr)
-        )
-        .sort((a,b)=>a.count-b.count);
+    let available = employees.filter((e,i)=>{
+      if(!e.days.includes(d.getDay())) return false;
+      if(shift==="Dzień" && !e.day) return false;
+      if(shift==="Noc" && !e.night) return false;
 
-      if(!available.length) return;
-      const needed=twoPeople.checked?2:1;
+      return !absences.some(a =>
+        a.emp===i &&
+        dateStr>=a.from &&
+        dateStr<=a.to &&
+        (a.shift==="ALL" || a.shift===shift)
+      );
+    }).sort((a,b)=>a.count-b.count);
 
-      for(let i=0;i<needed && i<available.length;i++){
-        const e=available[i];
-        e.count++;
-        schedule.push({e,d:new Date(d),shift});
-        scheduleTable.innerHTML+=`<tr>
-          <td contenteditable>${e.first}</td>
-          <td contenteditable>${e.last}</td>
-          <td contenteditable>${e.dept}</td>
-          <td>${dateStr}</td>
+    const needed = twoPeople.checked ? 2 : 1;
+    for(let i=0;i<needed && i<available.length;i++){
+      const e = available[i];
+      e.count++;
+      schedule.push({e, d:new Date(d), shift});
+      scheduleTable.innerHTML += `
+        <tr>
+          <td>${e.first}</td>
+          <td>${e.last}</td>
+          <td>${e.dept}</td>
+          <td>${dateStr.split("-").reverse().join(".")}</td>
           <td>${daysPL[d.getDay()]}</td>
-          <td>${shift}</td>
+          <td>${shift.toUpperCase()}</td>
         </tr>`;
-      }
-    });
+    }
   }
+  saveData();
+  renderStats();
+}
+
+function clearSchedule(){
+  schedule = [];
+  scheduleTable.innerHTML = "";
+  statsTable.innerHTML = "";
   saveData();
 }
 
-function saveManual(){
-  saveData();
-  alert("Zmiany zapisane");
+function renderStats(){
+  const map = {};
+  schedule.forEach(s=>{
+    const k = s.e.first+" "+s.e.last;
+    map[k] = (map[k]||0) + 1;
+  });
+  statsTable.innerHTML = "<tr><th>PRACOWNIK</th><th>LICZBA DYŻURÓW</th></tr>";
+  Object.entries(map).forEach(([k,v])=>{
+    statsTable.innerHTML += `<tr><td>${k}</td><td>${v}</td></tr>`;
+  });
 }
 
 function exportWord(){
   let html="<table border='1'><tr><th>IMIĘ</th><th>NAZWISKO</th><th>DZIAŁ</th><th>DATA</th><th>DZIEŃ</th><th>ZMIANA</th></tr>";
   schedule.forEach(s=>{
     html+=`<tr><td>${s.e.first}</td><td>${s.e.last}</td><td>${s.e.dept}</td>
-    <td>${s.d.toISOString().slice(0,10)}</td>
-    <td>${daysPL[s.d.getDay()]}</td><td>${s.shift}</td></tr>`;
+    <td>${s.d.toISOString().slice(0,10).split("-").reverse().join(".")}</td>
+    <td>${daysPL[s.d.getDay()]}</td><td>${s.shift.toUpperCase()}</td></tr>`;
   });
   html+="</table>";
 
-  const blob=new Blob(['\ufeff'+html],{type:"application/msword"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="grafik.doc";
+  const blob = new Blob(['\ufeff'+html],{type:"application/msword"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "GRAFIK.doc";
   a.click();
 }
