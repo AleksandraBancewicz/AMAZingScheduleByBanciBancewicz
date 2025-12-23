@@ -228,3 +228,12 @@ function exportWord(){
   a.download="GRAFIK.doc";
   a.click();
 }
+
+// Logowanie ENTEREM
+document.addEventListener("DOMContentLoaded", () => {
+  passwordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      login();
+    }
+  });
+});
