@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Generator Grafiku Dyżurów</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loginBox">
+  <h2>🔐 Dostęp do grafiku</h2>
+  <input type="password" id="passwordInput" placeholder="Hasło">
+  <button onclick="login()">Zaloguj</button>
+</div>
+
+<div id="app" class="hidden">
+
+<h1>📅 Generator Grafiku Dyżurów</h1>
+
+<nav>
+  <button onclick="showTab('employees')">Pracownicy</button>
+  <button onclick="showTab('absences')">Nieobecności</button>
+  <button onclick="showTab('holidays')">Święta</button>
+  <button onclick="showTab('schedule')">Grafik</button>
+</nav>
+
+<section id="employees" class="tab">
+  <h2>Pracownicy</h2>
+
+  <input id="firstName" placeholder="Imię">
+  <input id="lastName" placeholder="Nazwisko">
+  <input id="department" placeholder="Dział">
+
+  <fieldset>
+    <legend>Dni tygodnia</legend>
+    <label><input type="checkbox" value="1"> Pon</label>
+    <label><input type="checkbox" value="2"> Wt</label>
+    <label><input type="checkbox" value="3"> Śr</label>
+    <label><input type="checkbox" value="4"> Czw</label>
+    <label><input type="checkbox" value="5"> Pt</label>
+    <label><input type="checkbox" value="6"> Sob</label>
+    <label><input type="checkbox" value="0"> Nd</label>
+  </fieldset>
+
+  <label><input type="checkbox" id="dayShift"> Dzień</label>
+  <label><input type="checkbox" id="nightShift"> Noc</label>
+
+  <button onclick="addEmployee()">Dodaj pracownika</button>
+  <ul id="employeeList"></ul>
+</section>
+
+<section id="absences" class="tab hidden">
+  <h2>Nieobecności</h2>
+  <select id="absenceEmployee"></select>
+  <input type="date" id="absenceDate">
+  <button onclick="addAbsence()">Dodaj</button>
+  <ul id="absenceList"></ul>
+</section>
+
+<section id="holidays" class="tab hidden">
+  <h2>🎄 Święta / brak dyżuru</h2>
+  <input type="date" id="holidayDate">
+  <button onclick="addHoliday()">Dodaj</button>
+  <ul id="holidayList"></ul>
+</section>
+
+<section id="schedule" class="tab hidden">
+  <h2>Grafik – aktualny miesiąc</h2>
+
+  <label>
+    <input type="checkbox" id="twoPeople"> 2 osoby na dyżur
+  </label>
+
+  <br><br>
+  <button onclick="generateSchedule()">Generuj grafik</button>
+  <button onclick="saveManual()">Zapisz zmiany ręczne</button>
+  <button onclick="exportWord()">Eksport do Word</button>
+
+  <table id="scheduleTable"></table>
+</section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
