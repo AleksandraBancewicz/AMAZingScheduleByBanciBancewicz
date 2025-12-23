@@ -2,11 +2,13 @@
   --blue: #00A8E1;
   --orange: #FF9900;
   --light-blue: #E6F6FC;
+  --dark-blue: #0073B1;
+  --lightest-blue: #B3E0F2;
 }
 
 body {
   font-family: Arial, sans-serif;
-  background: #f5f5f5;
+  background: var(--lightest-blue);
   display: flex;
   justify-content: center;
 }
@@ -23,7 +25,7 @@ header {
 
 h4 {
   margin-top: -10px;
-  color: #555;
+  color: var(--dark-blue);
 }
 
 nav {
@@ -41,10 +43,11 @@ nav button {
 }
 
 .tab {
-  background: white;
+  background: #fff;
   padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .hidden { display: none; }
@@ -52,7 +55,7 @@ nav button {
 input, select {
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--blue);
 }
 
 button {
@@ -65,7 +68,7 @@ button {
   cursor: pointer;
 }
 
-button:hover { background: var(--blue); }
+button:hover { background: var(--dark-blue); }
 
 .card {
   display: grid;
@@ -82,7 +85,7 @@ button:hover { background: var(--blue); }
 }
 
 .employee-card {
-  background: #fff;
+  background: #E6F6FC;
   border-left: 6px solid var(--blue);
   padding: 12px;
   margin-top: 10px;
@@ -90,7 +93,12 @@ button:hover { background: var(--blue); }
 }
 
 .employee-card button {
-  margin-right: 5px;
+  margin: 5px 5px 0 0;
+  background: var(--blue);
+}
+
+.employee-card button:hover {
+  background: var(--dark-blue);
 }
 
 table {
@@ -116,8 +124,17 @@ tr:nth-child(even) {
 
 #loginBox {
   margin-top: 150px;
-  background: white;
+  background: var(--light-blue);
   padding: 25px;
   border-radius: 12px;
   text-align: center;
+  border: 2px solid var(--blue);
+}
+
+#loginBox button {
+  background: var(--blue);
+}
+
+#loginBox button:hover {
+  background: var(--dark-blue);
 }
