@@ -1,16 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root {
   --blue: #00A8E1;
+  --dark-blue: #0073B1;
   --orange: #FF9900;
   --light-blue: #E6F6FC;
-  --dark-blue: #0073B1;
   --lightest-blue: #B3E0F2;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: var(--lightest-blue);
   display: flex;
   justify-content: center;
+  margin: 0;
 }
 
 #app {
@@ -23,9 +26,14 @@ header {
   text-align: center;
 }
 
+h1 {
+  font-weight: 700;
+  color: var(--dark-blue);
+}
+
 h4 {
   margin-top: -10px;
-  color: var(--dark-blue);
+  color: var(--blue);
 }
 
 nav {
@@ -39,7 +47,8 @@ nav button {
   padding: 10px 16px;
   margin: 5px;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .tab {
@@ -50,12 +59,15 @@ nav button {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+.centered { text-align: center; }
+
 .hidden { display: none; }
 
 input, select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--blue);
+  font-family: 'Poppins', sans-serif;
 }
 
 button {
@@ -64,7 +76,7 @@ button {
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -82,6 +94,7 @@ button:hover { background: var(--dark-blue); }
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
+  font-size: 0.9em;
 }
 
 .employee-card {
@@ -90,11 +103,19 @@ button:hover { background: var(--dark-blue); }
   padding: 12px;
   margin-top: 10px;
   border-radius: 10px;
+  font-size: 0.95em;
+}
+
+.employee-card .name {
+  font-size: 1.3em;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 .employee-card button {
   margin: 5px 5px 0 0;
   background: var(--blue);
+  color: white;
 }
 
 .employee-card button:hover {
@@ -111,6 +132,7 @@ th {
   background: var(--blue);
   color: white;
   padding: 10px;
+  font-weight: 600;
 }
 
 td {
