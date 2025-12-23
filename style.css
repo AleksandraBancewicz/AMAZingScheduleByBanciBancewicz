@@ -122,6 +122,12 @@ button:hover { background: var(--dark-blue); }
   background: var(--dark-blue);
 }
 
+.alebance {
+  font-size: 2em;   /* 2 razy większe niż reszta */
+  font-weight: 700;
+  color: var(--orange); /* opcjonalnie, żeby wyróżnić */
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
